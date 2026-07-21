@@ -1,4 +1,4 @@
--- Run this in the Supabase SQL editor for your project.
+
 
 create table if not exists notes (
   id uuid primary key default gen_random_uuid(),
@@ -7,7 +7,6 @@ create table if not exists notes (
   created_at timestamptz not null default now()
 );
 
--- RLS is OFF by default even after policies exist below — this line is required.
 alter table notes enable row level security;
 
 create policy "Users can view own notes"
@@ -27,5 +26,3 @@ create policy "Users can delete own notes"
 on notes for delete
 using (auth.uid() = user_id);
 
--- Sanity check after creating policies:
--- select * from pg_policies where tablename = 'notes';

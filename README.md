@@ -20,38 +20,24 @@ Supabase magic links; no passwords stored or managed by this app.
    that scope every row to `auth.uid()`.
 
 3. Copy `.env.local.example` to `.env.local` and fill in your project's URL
-   and anon key (Project Settings → API in the Supabase dashboard):
+   and PUBLISHABLE_KEY key (Project Settings → API in the Supabase dashboard):
 
    ```
    NEXT_PUBLIC_SUPABASE_URL=your-project-url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
    ```
 
 4. Install and run:
 
    ```
-   npm install
-   npm run dev
+   pnpm install
+   pnpm run dev
    ```
 
 5. Visit `http://localhost:3000`, sign in with an email (magic link), and
    you'll land on `/notes`.
 
-## How RLS is enforced here
 
-- `notes.user_id` defaults to `auth.uid()` and every policy checks
-  `auth.uid() = user_id`, both when reading (`using`) and writing
-  (`with check`).
-- The **anon key** is used on both the client and the server — that key
-  has no special privileges beyond a normal browser client. The database,
-  not the app, is what stops one user from seeing or modifying another
-  user's notes. Enforcement is identical whether the query originates
-  from a Server Component, a client component, or an external API call.
-- The `with check` clause on the UPDATE policy is easy to skip and easy
-  to miss in review: without it, `using` alone would let a user update a
-  row they own but reassign its `user_id` to someone else, since `using`
-  only filters which existing rows are visible, not what values the write
-  can produce.
 
 ## Verifying isolation manually
 

@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -25,7 +25,22 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { pathname } = request.nextUrl
+
+  // Redirect unauthenticated users trying to access protected routes to /login
+  if (!user && pathname.startsWith('/notes')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Redirect authenticated users away from /login or / to /notes
+  if (user && (pathname === '/login' || pathname === '/')) {
+    return NextResponse.redirect(new URL('/notes', request.url))
+  }
+
   return response
 }
 

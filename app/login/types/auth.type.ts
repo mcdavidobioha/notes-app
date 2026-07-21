@@ -1,0 +1,1 @@
+export type AuthMode = 'SIGN_UP' | 'SIGN_IN'
